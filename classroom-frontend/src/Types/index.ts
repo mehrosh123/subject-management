@@ -35,3 +35,8 @@ export type Attendance = {
   studentId: string;
   classId: string;
 };
+
+export type UploadWidgetValue = {
+  url: string;
+  publicId: string;
+};
