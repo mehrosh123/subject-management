@@ -1,6 +1,22 @@
 import dataProviderRest from "@refinedev/simple-rest";
 
 const API_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+const buildHttpError = async (response: Response): Promise<HttpError> => {
+  let message = 'Request failed.';
+
+  try {
+    const payload = (await response.json()) as { message?: string }
+
+    if (payload?.message) message = payload.message;
+  } catch {
+    // Ignore errors
+  }
+
+  return {
+    message,
+    statusCode: response.status
+  }
+}
 
 const dataProviderOptions = {
     getList: {
@@ -31,6 +47,7 @@ const dataProviderOptions = {
         },
 
         mapResponse: async (response: Response) => {
+            if (!response.ok) throw await buildHttpError(response);
             const payload = await response.json();
             // Data return logic
             return payload.data ?? payload ?? [];

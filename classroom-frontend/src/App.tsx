@@ -2,7 +2,7 @@ import { GitHubBanner, Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
-// 1. Data Provider Import
+// Data Provider Import
 import dataProvider from "@refinedev/simple-rest"; 
 
 import routerProvider, {
@@ -15,17 +15,17 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { useNotificationProvider } from "./components/refine-ui/notification/use-notification-provider";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import Dashboard from "./pages/Dashboard";
-import { BookOpen, Home } from "lucide-react";
+import { Home, GraduationCap } from "lucide-react"; 
 import { ThemedLayout } from "@refinedev/antd";
 
-import Subjectslist from "./pages/subject/list";
-import SubjectCreate from "./pages/subject/create";
+// --- CLASSES IMPORTS ---
+import ClassesList from "./pages/classes/list";
+import ClassCreate from "./pages/classes/create";
 
 // Hardcoded API URL
 const API_URL = "http://localhost:8000/api";
 
 function App() {
-  // --- CUSTOM DATA PROVIDER LOGIC START ---
   const baseDataProvider = dataProvider(API_URL);
 
   const myDataProvider = {
@@ -33,15 +33,12 @@ function App() {
     getList: async ({ resource, pagination, filters, sorters, meta }: any) => {
       const response = await fetch(`${API_URL}/${resource}`);
       const json = await response.json();
-
-      // Agar backend se data key mein array aa raha hai to wo return karein
       return {
         data: json.data || [], 
         total: json.pagination?.total || json.data?.length || 0,
       };
     },
   };
-  // --- CUSTOM DATA PROVIDER LOGIC END ---
 
   return (
     <BrowserRouter>
@@ -49,7 +46,6 @@ function App() {
         <ThemeProvider>
           <DevtoolsProvider>
             <Refine
-              // Ab yahan 'myDataProvider' use hoga
               dataProvider={myDataProvider}
               notificationProvider={useNotificationProvider()}
               routerProvider={routerProvider}
@@ -62,13 +58,14 @@ function App() {
                 {
                   name: "dashboard",
                   list: "/",
-                  meta: { label: "home", icon: <Home /> },
+                  meta: { label: "Home", icon: <Home /> },
                 },
+                // --- CLASSES RESOURCE ---
                 {
-                  name: "subjects",
-                  list: "/subjects",
-                  create: "/subjects/create",
-                  meta: { label: "subjects", icon: <BookOpen /> },
+                  name: "classes",
+                  list: "/classes",
+                  create: "/classes/create",
+                  meta: { label: "Classes", icon: <GraduationCap /> },
                 },
               ]}
             >
@@ -81,9 +78,11 @@ function App() {
                   }
                 >
                   <Route index element={<Dashboard />} />
-                  <Route path="/subjects">
-                    <Route index element={<Subjectslist />} />
-                    <Route path="create" element={<SubjectCreate />} />
+
+                  {/* --- CLASSES ROUTES --- */}
+                  <Route path="/classes">
+                    <Route index element={<ClassesList />} />
+                    <Route path="create" element={<ClassCreate />} />
                   </Route>
                 </Route>
               </Routes>
